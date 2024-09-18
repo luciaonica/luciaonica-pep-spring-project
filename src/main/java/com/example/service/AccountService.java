@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.entity.Account;
+import com.example.exception.AccountAlreadyExistsException;
+import com.example.exception.InvalidCredentialsException;
 import com.example.repository.AccountRepository;
 
 @Service
@@ -17,33 +19,30 @@ public class AccountService {
 	        this.accountRepository = accountRepository;
 	    }
 	  
-	  public ResponseEntity<Account> persistAccount(Account account){
+	  public Account persistAccount(Account account) throws InvalidCredentialsException, AccountAlreadyExistsException{
 		  
 		  if ((account.getPassword().length() < 4) || (account.getUsername().trim().length() == 0)) {
-			  return ResponseEntity.status(400).body(null);
+			throw new InvalidCredentialsException("Invalid credentials");
+		  }	  
+		  
+		  Account accountFromDB = accountRepository.findByUsername(account.getUsername());
+		  
+		  if (accountFromDB != null) {
+			throw new AccountAlreadyExistsException("Account already exists with this username");
 		  }
 		  
-		  
-		  
-		  Account account1 = accountRepository.findByUsername(account.getUsername());
-		  
-		  if (account1 != null) {
-			  return ResponseEntity.status(409).body(null);
-		  }
-		  
-		  Account acc = accountRepository.save(account);
-		  
-	        return ResponseEntity.status(200).body(acc);
+		  return accountRepository.save(account);	  
+	        
 	    }
 
-		public ResponseEntity<Account> loginUser(Account account){
+		public Account loginUser(Account account) throws InvalidCredentialsException{
 			Account accountFromDB = accountRepository.findByUsername(account.getUsername());
-			
-			if (accountFromDB != null && account.getPassword().equals(accountFromDB.getPassword()) ) {
-				return new ResponseEntity<>(accountFromDB, HttpStatus.OK);
-			}
-			
-			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+		  
+		  if (accountFromDB != null && account.getPassword().equals(accountFromDB.getPassword()) ) {
+			  return accountFromDB;
+		  } else {
+			  throw new InvalidCredentialsException("invalid credentials");
+		  }
 		}
 
 }

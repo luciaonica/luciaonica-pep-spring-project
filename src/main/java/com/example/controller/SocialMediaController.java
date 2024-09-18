@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.exception.AccountAlreadyExistsException;
+import com.example.exception.InvalidCredentialsException;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 
@@ -33,20 +36,33 @@ public class SocialMediaController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<Account> saveAccount(@RequestBody Account account) {
-		return accountService.persistAccount(account);
+		try {
+			return new ResponseEntity<>(accountService.persistAccount(account), HttpStatus.OK);
+			
+		} catch(AccountAlreadyExistsException | InvalidCredentialsException e) {
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
+		}
 		
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<Account> loginUser(@RequestBody Account account) {
-		return accountService.loginUser(account);
+		try {
+			return new ResponseEntity<>(accountService.loginUser(account), HttpStatus.OK);
+		} catch(InvalidCredentialsException e) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
 		
 	}
 
 	@PostMapping("/messages")
 	public ResponseEntity<Message> createMessage(@RequestBody Message message) {
 		
-		return messageService.createMessage(message);	
+		try {
+			return new ResponseEntity<>(messageService.createMessage(message), HttpStatus.OK);
+		} catch(Exception e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}	
 	}
 
 }

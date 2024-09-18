@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.exception.AccountNotFoundException;
+import com.example.exception.InvalidMessageFormatException;
 import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 
@@ -24,21 +26,20 @@ public class MessageService {
         this.accountRepository = accountRepository;
     }
 
-    public ResponseEntity<Message> createMessage(Message message){
+    public Message createMessage(Message message) throws InvalidMessageFormatException, AccountNotFoundException{
         if (message.getMessageText().trim().length() == 0 || message.getMessageText().length() >= 255) {
             
-            return ResponseEntity.status(400).body(null);
+            throw new InvalidMessageFormatException("Invalid message format");
         }
 
         Optional<Account> accountOptional = accountRepository.findById(message.getPostedBy());
 
         if(accountOptional.isPresent()){
             
-            Message savedMessage = messageRepository.save(message);
-            return ResponseEntity.status(200).body(savedMessage);
+            return messageRepository.save(message);
         }else{
               
-            return ResponseEntity.status(400).body(null);
+            throw new AccountNotFoundException("invalid message format");
         }
     }
 
