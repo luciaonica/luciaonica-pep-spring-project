@@ -54,13 +54,24 @@ public class MessageService {
         
         Optional<Message> messageOptional = messageRepository.findById(id);
             
-            if(messageOptional.isPresent()){
-                
-                return messageOptional.get();
-            }else{
-                throw new MessageNotFoundException("message not found");
-            }
+        if(messageOptional.isPresent()){
+            
+            return messageOptional.get();
+        }else{
+            throw new MessageNotFoundException("message not found");
+        }        
+    }
+
+    public Integer deleteMessageById(int id) throws MessageNotFoundException {
         
+        Optional<Message> messageOptional = messageRepository.findById(id);
+          
+        if(messageOptional.isPresent()){
+            messageRepository.deleteById(id);
+            return 1;
+        }else{
+            throw new MessageNotFoundException("message not found");
+        }       
     }
 
 }
