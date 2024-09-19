@@ -11,6 +11,7 @@ import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.exception.AccountNotFoundException;
 import com.example.exception.InvalidMessageFormatException;
+import com.example.exception.MessageNotFoundException;
 import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 
@@ -47,6 +48,19 @@ public class MessageService {
     public List<Message> getAllMessages() {
 			
         return messageRepository.findAll();
+    }
+
+    public Message getMessageById(int id) throws MessageNotFoundException {
+        
+        Optional<Message> messageOptional = messageRepository.findById(id);
+            
+            if(messageOptional.isPresent()){
+                
+                return messageOptional.get();
+            }else{
+                throw new MessageNotFoundException("message not found");
+            }
+        
     }
 
 }
