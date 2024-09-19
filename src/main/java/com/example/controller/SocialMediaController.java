@@ -97,4 +97,10 @@ public class SocialMediaController {
 		}	
 	}
 
+	@GetMapping("/accounts/{account_id}/messages")
+	public List<Message> getAllMessagesByAccountId(@PathVariable String account_id) {
+		
+		return messageService.getAllMessagesByAccountId(Integer.parseInt(account_id));		
+	}
+
 }
