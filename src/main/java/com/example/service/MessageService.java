@@ -79,4 +79,24 @@ public class MessageService {
         return messageRepository.findByPostedBy(accountId);
     }
 
+    public Integer updateMessage(int id, Message newMessage) throws InvalidMessageFormatException, MessageNotFoundException {
+			
+        if (newMessage.getMessageText().trim().length() == 0 || newMessage.getMessageText().length() >= 255) {
+            throw new InvalidMessageFormatException("invalid message format");
+        }        
+        
+        Optional<Message> messageOptional = messageRepository.findById(id);
+        
+        if(messageOptional.isPresent()){	
+            
+            Message message = messageOptional.get();
+            message.setMessageText(newMessage.getMessageText());
+            messageRepository.save(message);
+            return 1;
+        }else{
+            throw new MessageNotFoundException("message not found");
+        }
+    
+    }
+
 }
