@@ -14,12 +14,19 @@ import com.example.repository.AccountRepository;
 public class AccountService {
     private AccountRepository accountRepository;
 	
-	  @Autowired
+	    @Autowired
 	    public AccountService(AccountRepository accountRepository){
 	        this.accountRepository = accountRepository;
 	    }
 	  
-	  public Account persistAccount(Account account) throws InvalidCredentialsException, AccountAlreadyExistsException{
+		/**
+	     * create a new account
+	     * @param account
+	     * @return the new account if the persistence is successful, or throw an exception
+	     * @throws AccountAlreadyExistsException
+	     * @throws InvalidCredentialsException
+	     */
+	    public Account persistAccount(Account account) throws InvalidCredentialsException, AccountAlreadyExistsException{
 		  
 		  if ((account.getPassword().length() < 4) || (account.getUsername().trim().length() == 0)) {
 			throw new InvalidCredentialsException("Invalid credentials");
@@ -35,6 +42,12 @@ public class AccountService {
 	        
 	    }
 
+		/**
+		 * Login user
+		 * @param account
+		 * @return
+		 * @throws InvalidCredentialsException
+		 */
 		public Account loginUser(Account account) throws InvalidCredentialsException{
 			Account accountFromDB = accountRepository.findByUsername(account.getUsername());
 		  

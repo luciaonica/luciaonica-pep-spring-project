@@ -8,5 +8,10 @@ import com.example.entity.Message;
 
 public interface MessageRepository extends JpaRepository<Message, Integer>{
 
+    /**
+     * Retrieve messages posted by user with given ID
+     * @param postedBy
+     * @return list of messages
+     */
     List<Message> findByPostedBy(int postedBy);
 }

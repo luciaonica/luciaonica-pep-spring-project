@@ -28,6 +28,13 @@ public class MessageService {
         this.accountRepository = accountRepository;
     }
 
+    /**
+     * Add a message to DB
+     * @param message
+     * @return The persisted message if the persistence is successful or throw an exception
+     * @throws InvalidMessageFormatException
+     * @throws AccountNotFoundException
+     */
     public Message createMessage(Message message) throws InvalidMessageFormatException, AccountNotFoundException{
         if (message.getMessageText().trim().length() == 0 || message.getMessageText().length() >= 255) {
             
@@ -45,11 +52,21 @@ public class MessageService {
         }
     }
 
+    /**
+     * Retrieve all messages from DB
+     * @return A list of messages
+     */
     public List<Message> getAllMessages() {
 			
         return messageRepository.findAll();
     }
 
+    /**
+     * retrieve a message by given id
+     * @param id
+     * @return the message with given id if it is found or throw an exception
+     * @throws MessageNotFoundException
+     */
     public Message getMessageById(int id) throws MessageNotFoundException {
         
         Optional<Message> messageOptional = messageRepository.findById(id);
@@ -62,6 +79,12 @@ public class MessageService {
         }        
     }
 
+    /**
+     * message by given id
+     * @param id
+     * @return 1 if the deletion is successful or throw an exception
+     * @throws MessageNotFoundException
+     */
     public Integer deleteMessageById(int id) throws MessageNotFoundException {
         
         Optional<Message> messageOptional = messageRepository.findById(id);
@@ -74,11 +97,24 @@ public class MessageService {
         }       
     }
 
+    /**
+     * retrieve all messages by given account id
+     * @param accountId
+     * @return all messages posted by user with given account id
+     */
     public List<Message> getAllMessagesByAccountId(int accountId) {
         
         return messageRepository.findByPostedBy(accountId);
     }
 
+    /**
+     * delete message by given id
+     * @param id
+     * @param newMessage
+     * @return 1 if the deletion is successful or throw an exception
+     * @throws InvalidMessageFormatException
+     * @throws MessageNotFoundException
+     */
     public Integer updateMessage(int id, Message newMessage) throws InvalidMessageFormatException, MessageNotFoundException {
 			
         if (newMessage.getMessageText().trim().length() == 0 || newMessage.getMessageText().length() >= 255) {

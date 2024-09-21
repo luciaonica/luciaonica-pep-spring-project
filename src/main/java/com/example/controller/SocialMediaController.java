@@ -41,17 +41,29 @@ public class SocialMediaController {
 		this.messageService = messageService;
 	}
 	
+	/**
+	 * Handler method to create a new account
+	 * @param account
+	 * @return the newly created account if the operation was successful or HttpStatusCode 400 or 409
+	 */
 	@PostMapping("/register")
 	public ResponseEntity<Account> saveAccount(@RequestBody Account account) {
 		try {
 			return new ResponseEntity<>(accountService.persistAccount(account), HttpStatus.OK);
 			
-		} catch(AccountAlreadyExistsException | InvalidCredentialsException e) {
+		} catch(AccountAlreadyExistsException e ) {
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
+		} catch (InvalidCredentialsException e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
 	}
 
+	/**
+	 * Handler method to login user
+	 * @param account
+	 * @return the account of logged in user if login was successful or HttpStatusCode 401
+	 */
 	@PostMapping("/login")
 	public ResponseEntity<Account> loginUser(@RequestBody Account account) {
 		try {
@@ -62,6 +74,11 @@ public class SocialMediaController {
 		
 	}
 
+	/**
+	 * Handler method to post a new message
+	 * @param message
+	 * @return the newly created message if the operation was successful or HttpStatusCode 400
+	 */
 	@PostMapping("/messages")
 	public ResponseEntity<Message> createMessage(@RequestBody Message message) {
 		
@@ -72,12 +89,21 @@ public class SocialMediaController {
 		}	
 	}
 
+	/**
+	 * Handler method to retrieve all messages
+	 * @return A list of messages or an empty list
+	 */
 	@GetMapping("/messages")
 	public List<Message> getAllMessages() {
 		
 		return messageService.getAllMessages();		
 	}
 
+	/**
+	 * Handler method to retrieve a message with a given id.
+	 * @param message_id
+	 * @return message with the given id. If no message exists with this id return empty body.
+	 */
 	@GetMapping("/messages/{message_id}")
 	public ResponseEntity<Message> getMessageById(@PathVariable String message_id) {
 		
@@ -88,6 +114,11 @@ public class SocialMediaController {
 		}		
 	}
 
+	/**
+	 * Handler method to delete a message with given id.
+	 * @param message_id
+	 * @return 1 if the message was deleted. If no message exists with this id return empty body.
+	 */
 	@DeleteMapping("/messages/{message_id}")
 	public ResponseEntity<Integer> deleteMessageById(@PathVariable String message_id) {
 		
@@ -98,12 +129,23 @@ public class SocialMediaController {
 		}	
 	}
 
+	/**
+	 * Handler method to retrieve all messages posted by user with given account id
+	 * @param account_id
+	 * @return A list of messages
+	 */
 	@GetMapping("/accounts/{account_id}/messages")
 	public List<Message> getAllMessagesByAccountId(@PathVariable String account_id) {
 		
 		return messageService.getAllMessagesByAccountId(Integer.parseInt(account_id));		
 	}
 
+	/**
+	 * Handler method to update the message text by given id
+	 * @param message_id
+	 * @param message
+	 * @return 1 if the update was successful or HttpStatusCode 400
+	 */
 	@PatchMapping("/messages/{message_id}")
 	public ResponseEntity<Integer> updateMessageById(@PathVariable String message_id, @RequestBody Message message) {
 		
